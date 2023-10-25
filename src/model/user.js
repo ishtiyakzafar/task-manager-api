@@ -8,6 +8,7 @@ const userModel = new mongoose.Schema(
         password: { type: String, required: true },
         role: { type: String, required: true, enum: ['admin', 'user'] },
         image: { type: String },
+        accountVerified: { type: Boolean, default: false },
     },
     { timestamps: true }
 );

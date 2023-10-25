@@ -18,6 +18,7 @@ exports.createTask = async (req, res) => {
         newTask.save(function (err, task) {
             task
                 .populate("userId", "fullName")
+                .populate("comments.userId", "fullName email")
                 .execPopulate()
                 .then(function (task) {
                     return res
@@ -33,7 +34,10 @@ exports.createTask = async (req, res) => {
 // GET TASK LIST
 exports.taskList = async (req, res) => {
     try {
-        const tasks = await Task.find({ userId: req.user._id }).populate('userId', 'fullName email').populate("comments.userId", "fullName email").sort({ updatedAt: -1 });
+        const tasks = await Task.find({ userId: req.user._id })
+            .populate('userId', 'fullName email')
+            .populate("comments.userId", "fullName email")
+            .sort({ updatedAt: -1 });
         return res.status(200).json(tasks);
     } catch (error) {
         res.status(500).json({ message: "Something went wrong " + error });
