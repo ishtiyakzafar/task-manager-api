@@ -4,6 +4,7 @@ const env = require("dotenv");
 const cors = require("cors");
 const http = require("http");
 const port = process.env.PORT || 2000;
+const cron = require('node-cron');
 
 //ENVIRONMENT VARIABLE/CONSTANTS
 env.config();
@@ -51,3 +52,24 @@ function main() {
 }
 
 main();
+
+
+cron.schedule('*/1 * * * *', () => {
+  // Send an HTTP request to your server
+  const options = {
+    hostname: 'task-manager-api-t9h4.onrender.com',  // Change to your server's hostname or IP address
+    port: port,             // Change to your server's port
+    path: '/',              // Change to the path you want to ping
+    method: 'GET',
+  };
+
+  const pingReq = http.request(options, (pingRes) => {
+    console.log(`Ping request response: ${pingRes.statusCode}`);
+  });
+
+  pingReq.on('error', (error) => {
+    console.error(`Error in ping request: ${error.message}`);
+  });
+
+  pingReq.end();
+});
