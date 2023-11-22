@@ -1,31 +1,17 @@
 const Task = require("../model/task");
 
+
+
 // CREATE NEW TASK
 exports.createTask = async (req, res) => {
     try {
-        const { project_name, task_category, task_start_date, task_end_date, title, description, comment } = req.body;
-        const data = {
-            project_name,
-            task_category,
-            task_start_date,
-            task_end_date,
+        const newTask = new Task({
             userId: req.user._id,
-            title,
-            description,
-            comments: comment ? { comment, userId: req.user._id } : []
-        }
-        const newTask = new Task(data);
-        newTask.save(function (err, task) {
-            task
-                .populate("userId", "fullName")
-                .populate("comments.userId", "fullName email")
-                .execPopulate()
-                .then(function (task) {
-                    return res
-                        .status(201)
-                        .json({ data: task, message: 'Task created successfully' });
-                });
+            title: req.body.title,
+            project_name: req.body.project_name,
         });
+        const result = await newTask.save();
+        return res.status(201).json(result);
     } catch (error) {
         res.status(500).json({ message: "Something went wrong " + error });
     }
@@ -34,11 +20,16 @@ exports.createTask = async (req, res) => {
 // GET TASK LIST
 exports.taskList = async (req, res) => {
     try {
-        const tasks = await Task.find({ userId: req.user._id })
-            .populate('userId', 'fullName email')
-            .populate("comments.userId", "fullName email")
-            .sort({ updatedAt: -1 });
-        return res.status(200).json(tasks);
+        const result = await Task.find({
+            userId: req.user._id,
+            createdAt: req.body.createdAt
+            //  {
+            // $gte: today.toDate(),
+            // $lte: endOfDay.toDate(),
+            //     $lt: today.toDate() // Less than the beginning of the current day
+            // },
+        }).populate("comments.userId", "fullName email");
+        return res.status(200).json(result);
     } catch (error) {
         res.status(500).json({ message: "Something went wrong " + error });
     }
@@ -46,32 +37,42 @@ exports.taskList = async (req, res) => {
 
 // UPDATE TASK
 exports.updateTask = async (req, res) => {
-    const { state, comment, id } = req.body;
-    let data;
-    if (comment) {
-        data = {
-            state,
-            $push: {
-                comments: {
-                    $each: [{
-                        userId: req.user._id,
-                        comment,
-                    }],
-                    $position: 0
-                }
-            }
-        }
-    } else {
-        data = {
-            state,
-        }
-    }
+    // const { state, comment, id } = req.body;
+    // let data;
+    // if (comment) {
+    //     data = {
+    //         state,
+    //         $push: {
+    //             comments: {
+    //                 $each: [{
+    //                     userId: req.user._id,
+    //                     comment,
+    //                 }],
+    //                 $position: 0
+    //             }
+    //         }
+    //     }
+    // } else {
+    //     data = {
+    //         state,
+    //     }
+    // }
 
     try {
-        const tasks = await Task.findByIdAndUpdate(id, data, { new: true }).populate('userId', 'fullName email').populate("comments.userId", "fullName email");;
-        return res.status(200).json(tasks);
+        const result = await Task.findByIdAndUpdate(req.body._id, req.body, { new: true });
+        return res.status(200).json(result);
     } catch (error) {
         res.status(500).json({ message: "Something went wrong " + error });
+    }
+};
+
+
+exports.updateTaskState = async (req, res) => {
+    try {
+        await Task.findByIdAndUpdate(req.body._id, { state: req.body.state }, { new: true });
+        res.status(200).json({ message: "Your task state updated successfully." });
+    } catch (error) {
+        res.status(500).json({ message: "something went wrong", error });
     }
 };
 
@@ -79,8 +80,69 @@ exports.updateTask = async (req, res) => {
 exports.deleteTask = async (req, res) => {
     try {
         await Task.findByIdAndDelete(req.params.id);
-        res.status(200).json({ message: "Task deleted successfully" });
+        res.status(200).json({ message: "Your work item has been deleted." });
     } catch (error) {
         res.status(500).json({ message: "something went wrong", error });
     }
 };
+
+
+exports.filterTask = async (req, res) => {
+    try {
+        const { search } = req.query;
+
+        const filterQuery = {
+            $or: [
+                { title: { $regex: search, $options: "i" } },
+                { project_name: { $regex: search, $options: "i" } },
+                { task_category: { $regex: search, $options: "i" } },
+            ]
+        };
+
+        const result = await Task.find(filterQuery)
+            .populate('userId', 'fullName email')
+            .populate("comments.userId", "fullName email")
+            .sort({ updatedAt: -1 })
+            .exec();
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ message: "something went wrong", error });
+    }
+};
+
+
+exports.addComment = async (req, res) => {
+    try {
+        const result = await Task.findByIdAndUpdate(
+            req.body._id,
+            {
+                $push: {
+                    comments: {
+                        userId: req.user._id,
+                        comment: req.body.comment,
+                        createdAt: req.body.createdAt,
+                    },
+                },
+            },
+            { new: true }).populate("comments.userId", "fullName email");
+        return res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ message: "Something went wrong " + error });
+    }
+};
+
+
+
+exports.deleteComment = async (req, res) => {
+    try {
+        await Task.updateOne(
+            { _id: req.body.taskId, "comments._id": req.body.commentId },
+            { $pull: { comments: { _id: req.body.commentId } } },
+            { new: true }
+        );
+        res.status(200).json({ message: "Your comment has been deleted." });
+    } catch (error) {
+        res.status(500).json({ message: "something went wrong", error });
+    }
+};
+
