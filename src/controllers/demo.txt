@@ -1,0 +1,28 @@
+ let createdAt;
+
+    if (!fromDate && !toDate) {
+        createdAt = {
+            "$lt": moment().startOf('day').toDate(),
+        }
+    }
+
+    if (fromDate && toDate) {
+        createdAt = {
+            "$gte": moment(new Date(fromDate)).utc().startOf('day').toDate(),
+            "$lte": moment(new Date(toDate)).utc().endOf('day').toDate(),
+        }
+    }
+
+    if (fromDate && toDate) {
+
+    }
+
+    try {
+        const data = await Task.find({
+            userId: req.user._id,
+            createdAt,
+        }).populate("comments.userId", "fullName email");
+
+       
+
+       

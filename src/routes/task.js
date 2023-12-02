@@ -1,11 +1,12 @@
 const express = require("express");
 const { requireLogin } = require("../common-middleware");
 const router = express.Router();
-const { createTask, taskList, updateTask, addComment, deleteComment, updateTaskState, deleteTask, filterTask } = require("../controllers/task");
+const { createTask, taskHistory, todaySod, updateTask, addComment, deleteComment, updateTaskState, deleteTask, filterTask } = require("../controllers/task");
 
 
 router.post("/createtask", requireLogin, createTask);
-router.post("/tasklist", requireLogin, taskList);
+router.post("/taskhistory", requireLogin, taskHistory);
+router.post("/todaysod", requireLogin, todaySod);
 router.post("/updatetask", requireLogin, updateTask);
 router.post("/addcomment", requireLogin, addComment);
 router.post("/deletecomment", requireLogin, deleteComment);

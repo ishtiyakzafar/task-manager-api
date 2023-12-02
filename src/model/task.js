@@ -11,6 +11,7 @@ const taskModel = new mongoose.Schema(
             createdAt: { type: Date },
         }],
         state: { type: Boolean, default: false },
+        eod_date: { type: Date },
     },
     { timestamps: true }
 );

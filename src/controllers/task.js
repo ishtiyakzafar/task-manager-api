@@ -1,5 +1,6 @@
 const Task = require("../model/task");
-
+const moment = require('moment');
+// const CronJob = require('cron').CronJob;
 
 
 // CREATE NEW TASK
@@ -17,17 +18,42 @@ exports.createTask = async (req, res) => {
     }
 };
 
-// GET TASK LIST
-exports.taskList = async (req, res) => {
+// GET TASK HISTORY LIST
+exports.taskHistory = async (req, res) => {
+    const { fromDate, toDate, projectName } = req.body;
+
+    let payload = {
+        userId: req.user._id,
+        createdAt: {
+            "$lt": moment().startOf('day').toDate(),
+        }
+    }
+
+    if (fromDate && toDate) {
+        payload.createdAt = {
+            "$gte": moment(new Date(fromDate)).utc().startOf('day').toDate(),
+            "$lte": moment(new Date(toDate)).utc().endOf('day').toDate(),
+        }
+    }
+
+    if (projectName) payload.project_name = projectName;
+
+    try {
+        const result = await Task.find(payload).populate("comments.userId", "fullName email");
+        return res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ message: "Something went wrong " + error });
+    }
+};
+
+exports.todaySod = async (req, res) => {
     try {
         const result = await Task.find({
             userId: req.user._id,
-            createdAt: req.body.createdAt
-            //  {
-            // $gte: today.toDate(),
-            // $lte: endOfDay.toDate(),
-            //     $lt: today.toDate() // Less than the beginning of the current day
-            // },
+            $or: [
+                { createdAt: req.body.createdAt },
+                { state: false },
+            ]
         }).populate("comments.userId", "fullName email");
         return res.status(200).json(result);
     } catch (error) {
@@ -69,7 +95,7 @@ exports.updateTask = async (req, res) => {
 
 exports.updateTaskState = async (req, res) => {
     try {
-        await Task.findByIdAndUpdate(req.body._id, { state: req.body.state }, { new: true });
+        await Task.findByIdAndUpdate(req.body._id, req.body, { new: true });
         res.status(200).json({ message: "Your task state updated successfully." });
     } catch (error) {
         res.status(500).json({ message: "something went wrong", error });
@@ -145,4 +171,13 @@ exports.deleteComment = async (req, res) => {
         res.status(500).json({ message: "something went wrong", error });
     }
 };
+
+// Schedule a task to run every day at 23:30 PM
+// const job = new CronJob('0 30 23 * * *', () => {
+//     const date = new Date();
+//     console.log(date.getDay() === 6);
+// }, null, true, 'Asia/Kolkata');
+
+// job.start();
+
 
