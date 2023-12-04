@@ -64,8 +64,20 @@ exports.emailverify = async (req, res) => {
 
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await User.find({  role: "user" })
+    const users = await User.find({ role: "user" })
+      .sort({ createdAt: -1 })
       .select('fullName email status accountVerified createdAt');
+    return res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ message: "Something went wrong " + error });
+  }
+};
+
+exports.getAllVerifiedUsers = async (req, res) => {
+  try {
+    const users = await User.find({ role: "user", accountVerified: true })
+      .sort({ createdAt: -1 })
+      .select('fullName');
     return res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ message: "Something went wrong " + error });
@@ -79,5 +91,14 @@ exports.updateUserStatus = async (req, res) => {
     return res.status(200).json({ message: "user status updated successfully" });
   } catch (error) {
     res.status(500).json({ message: "Something went wrong " + error });
+  }
+};
+
+exports.deleteUser = async (req, res) => {
+  try {
+    await User.findByIdAndDelete(req.params.id);
+    res.status(200).json({ message: "User has been deleted" });
+  } catch (error) {
+    res.status(500).json({ message: "something went wrong", error });
   }
 };

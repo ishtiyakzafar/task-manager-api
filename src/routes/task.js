@@ -15,6 +15,8 @@ const {
   adminAddTask,
   addProjectName,
   getProjects,
+  deleteProject,
+  updateProject,
 } = require("../controllers/task");
 
 // USER ROUTES
@@ -36,5 +38,10 @@ router.post("/admin/task-all", requireLogin, adminMiddleware, getAllTasks);
 router.post("/admin/add-task", requireLogin, adminMiddleware, adminAddTask);
 router.post("/admin/add-projectname", requireLogin, adminMiddleware, addProjectName);
 router.get("/admin/projects", requireLogin, adminMiddleware, getProjects);
+router.delete("/admin/delete-project/:id", requireLogin, adminMiddleware, deleteProject);
+router.post("/admin/update-project", requireLogin, adminMiddleware, updateProject);
+
+
+
 
 module.exports = router;

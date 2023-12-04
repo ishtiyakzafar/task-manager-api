@@ -240,3 +240,22 @@ exports.getProjects = async (req, res) => {
         res.status(500).json({ message: "Something went wrong " + error });
     }
 };
+
+exports.deleteProject = async (req, res) => {
+    try {
+        await Project.findByIdAndDelete(req.params.id);
+        res.status(200).json({ message: "Project has been deleted" });
+    } catch (error) {
+        res.status(500).json({ message: "something went wrong", error });
+    }
+};
+
+exports.updateProject = async (req, res) => {
+    try {
+        await Project.findByIdAndUpdate(req.body.id, req.body, { new: true });
+        res.status(200).json({ message: "Project has been updated" });
+    } catch (error) {
+        res.status(500).json({ message: "something went wrong", error });
+    }
+};
+
