@@ -1,4 +1,6 @@
 const Task = require("../model/task");
+const Project = require("../model/project");
+
 const moment = require('moment');
 // const CronJob = require('cron').CronJob;
 
@@ -181,3 +183,60 @@ exports.deleteComment = async (req, res) => {
 // job.start();
 
 
+// GET ALL TASK 
+exports.getAllTasks = async (req, res) => {
+    const { fromDate, toDate, projectName, userId } = req.body;
+
+    let payload = {}
+
+    if (fromDate && toDate) {
+        payload.createdAt = {
+            "$gte": moment(new Date(fromDate)).utc().startOf('day').toDate(),
+            "$lte": moment(new Date(toDate)).utc().endOf('day').toDate(),
+        }
+    }
+
+    if (projectName) payload.project_name = projectName;
+    if (userId) payload.userId = userId;
+
+
+    try {
+        const result = await Task.find(payload)
+            .populate("userId", "fullName")
+            .populate("comments.userId", "fullName email");
+        return res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ message: "Something went wrong " + error });
+    }
+};
+
+
+exports.adminAddTask = async (req, res) => {
+    try {
+        const newTask = new Task(req.body);
+        await newTask.save();
+        return res.status(201).json({ message: "Task created successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "Something went wrong " + error });
+    }
+};
+
+exports.addProjectName = async (req, res) => {
+    try {
+        const newTask = new Project(req.body);
+        await newTask.save();
+        return res.status(201).json({ message: "Project name added successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "Something went wrong " + error });
+    }
+};
+
+
+exports.getProjects = async (req, res) => {
+    try {
+        const result = await Project.find({}).sort({ createdAt: -1 });
+        return res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ message: "Something went wrong " + error });
+    }
+};

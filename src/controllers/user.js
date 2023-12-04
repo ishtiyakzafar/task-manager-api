@@ -60,3 +60,24 @@ exports.emailverify = async (req, res) => {
     res.status(500).json({ message: "Something went wrong " + error });
   }
 }
+
+
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find({  role: "user" })
+      .select('fullName email status accountVerified createdAt');
+    return res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ message: "Something went wrong " + error });
+  }
+};
+
+
+exports.updateUserStatus = async (req, res) => {
+  try {
+    await User.findByIdAndUpdate(req.body.userId, { status: req.body.status });
+    return res.status(200).json({ message: "user status updated successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Something went wrong " + error });
+  }
+};
