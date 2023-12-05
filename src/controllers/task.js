@@ -224,8 +224,8 @@ exports.adminAddTask = async (req, res) => {
 exports.addProjectName = async (req, res) => {
     try {
         const newTask = new Project(req.body);
-        await newTask.save();
-        return res.status(201).json({ message: "Project name added successfully" });
+        const result = await newTask.save();
+        return res.status(200).json(result);
     } catch (error) {
         res.status(500).json({ message: "Something went wrong " + error });
     }
@@ -244,7 +244,7 @@ exports.getProjects = async (req, res) => {
 exports.deleteProject = async (req, res) => {
     try {
         await Project.findByIdAndDelete(req.params.id);
-        res.status(200).json({ message: "Project has been deleted" });
+        return res.status(200).json({ message: "Project has been deleted" });
     } catch (error) {
         res.status(500).json({ message: "something went wrong", error });
     }
@@ -252,8 +252,8 @@ exports.deleteProject = async (req, res) => {
 
 exports.updateProject = async (req, res) => {
     try {
-        await Project.findByIdAndUpdate(req.body.id, req.body, { new: true });
-        res.status(200).json({ message: "Project has been updated" });
+        const result = await Project.findByIdAndUpdate(req.body.id, req.body, { new: true });
+        return res.status(200).json(result);
     } catch (error) {
         res.status(500).json({ message: "something went wrong", error });
     }
