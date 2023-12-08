@@ -33,7 +33,7 @@ function main() {
   const postRoutes = require("./routes/post");
   const classroomRoutes = require("./routes/classroom");
   const taskRoutes = require("./routes/task");
-
+  const attendanceRoutes = require("./routes/attendance");
 
   app.use(cors());
   app.use(express.json());
@@ -47,6 +47,8 @@ function main() {
   app.use("/api", postRoutes);
   app.use("/api", classroomRoutes);
   app.use("/api", taskRoutes);
+  app.use("/api", attendanceRoutes);
+
 
 }
 
