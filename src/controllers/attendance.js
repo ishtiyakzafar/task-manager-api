@@ -34,3 +34,25 @@ exports.updateAttendance = async (req, res) => {
     res.status(500).json({ message: "Something went wrong " + error });
   }
 };
+
+exports.userAttendance = async (req, res) => {
+  const { fromDate, toDate } = req.body;
+
+  try {
+    const result = await Attendance.find({
+      userId: req.user._id,
+      $or: [
+        { state: 2 },
+        { state: 1 },
+        { state: 0 },
+      ],
+      createdAt: {
+        "$gte": moment(new Date(fromDate)).utc().startOf('day').toDate(),
+        "$lte": moment(new Date(toDate)).utc().endOf('day').toDate(),
+      }
+    });
+    return res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ message: "Something went wrong " + error });
+  }
+};

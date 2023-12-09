@@ -6,10 +6,13 @@ const {
   createAttendance,
   getAttendance,
   updateAttendance,
+  userAttendance,
 } = require("../controllers/attendance");
 
 router.post("/attendance", requireLogin, userMiddleware, createAttendance);
 router.get("/attendance", requireLogin, userMiddleware, getAttendance);
 router.put("/attendance", requireLogin, userMiddleware, updateAttendance);
+router.post("/attendance/user", requireLogin, userMiddleware, userAttendance);
+
 
 module.exports = router;
