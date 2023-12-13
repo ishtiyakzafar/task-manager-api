@@ -185,9 +185,9 @@ exports.deleteComment = async (req, res) => {
 
 // GET ALL TASK 
 exports.getAllTasks = async (req, res) => {
-    const { fromDate, toDate, projectName, userId } = req.body;
+    const { fromDate, toDate, project_name, userId } = req.body;
 
-    let payload = {}
+    let payload = {};
 
     if (fromDate && toDate) {
         payload.createdAt = {
@@ -195,15 +195,19 @@ exports.getAllTasks = async (req, res) => {
             "$lte": moment(new Date(toDate)).utc().endOf('day').toDate(),
         }
     }
-
-    if (projectName) payload.project_name = projectName;
+    if (project_name) payload.project_name = project_name;
     if (userId) payload.userId = userId;
 
 
     try {
-        const result = await Task.find(payload)
-            .populate("userId", "fullName")
-            .populate("comments.userId", "fullName email");
+        let result;
+        if (fromDate || toDate || project_name || userId) {
+            result = await Task.find(payload)
+                .populate("userId", "fullName")
+                .populate("comments.userId", "fullName email");
+        } else {
+            result = []
+        }
         return res.status(200).json(result);
     } catch (error) {
         res.status(500).json({ message: "Something went wrong " + error });
