@@ -2,7 +2,7 @@ const Task = require("../model/task");
 const Project = require("../model/project");
 
 const moment = require('moment');
-// const CronJob = require('cron').CronJob;
+
 
 
 // CREATE NEW TASK
@@ -174,13 +174,7 @@ exports.deleteComment = async (req, res) => {
     }
 };
 
-// Schedule a task to run every day at 23:30 PM
-// const job = new CronJob('0 30 23 * * *', () => {
-//     const date = new Date();
-//     console.log(date.getDay() === 6);
-// }, null, true, 'Asia/Kolkata');
 
-// job.start();
 
 
 // GET ALL TASK 
