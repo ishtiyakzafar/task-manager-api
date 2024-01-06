@@ -4,6 +4,8 @@ const userModel = new mongoose.Schema(
     {
         status: { type: Boolean, default: true },
         fullName: { type: String, required: true, trim: true },
+        mobile: { type: String, required: true, trim: true },
+        dob: { type: Date, required: true},
         email: { type: String, required: true, unique: true },
         password: { type: String, required: true },
         role: { type: String, required: true, enum: ['admin', 'user'] },
