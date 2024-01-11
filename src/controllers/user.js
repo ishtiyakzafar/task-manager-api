@@ -1,4 +1,4 @@
-const { emailVerification } = require("../helpers");
+// const { emailVerification } = require("../helpers");
 const User = require("../model/user");
 const jwt = require("jsonwebtoken");
 // const bcrypt = require("bcrypt");
@@ -14,10 +14,12 @@ exports.register = async (req, res) => {
     await newUser.save();
     const { _id, role, email, fullName } = newUser;
     const token = jwt.sign({ _id, role }, "jdad4a#$@hsehfjdhf", { expiresIn: "1d" });
-    emailVerification(fullName, email, token)
+    // emailVerification(fullName, email, token)
 
     // return res.status(201).json({ token, _id, role, email, fullName });
-    return res.status(201).json({ message: `You have successfully sign up to Task Manager! Please check ${email} to activate your account.` });
+    // return res.status(201).json({ message: `You have successfully sign up to Task Manager! Please check ${email} to activate your account.` });
+    return res.status(201).json({fullName, email, token, message: `You have successfully created your account.` });
+
   } catch (error) {
     res.status(500).json({ message: "Something went wrong " + error });
   }
