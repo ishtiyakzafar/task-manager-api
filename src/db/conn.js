@@ -1,7 +1,9 @@
 const mongoose = require("mongoose");
 
 // const DB = 'mongodb://localhost/localdb';
-const DB = 'mongodb+srv://ishtiyaquejaffer:VQk5aZrvYCqIzcZE@cluster0.dmytrfs.mongodb.net/?retryWrites=true&w=majority';
+const DB = 'mongodb+srv://ishtiyaquejaffer:VQk5aZrvYCqIzcZE@cluster0.dmytrfs.mongodb.net/taskmanager?retryWrites=true&w=majority';
+
+
 
 mongoose
   .connect(DB, {
