@@ -7,20 +7,20 @@ exports.requireLogin = (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-    return res.status(400).json({ message: 'Authorization required' });
+    return res.status(400).json({ message: 'Authorization Required' });
   }
 };
 
 exports.userMiddleware = (req, res, next) => {
   if (req.user.role !== "user") {
-    return res.status(400).json({ message: "User access denied" });
+    return res.status(400).json({ message: "User Access Denied" });
   }
   next();
 };
 
 exports.adminMiddleware = (req, res, next) => {
   if (req.user.role !== "admin") {
-    return res.status(400).json({ message: "Admin access denied" });
+    return res.status(400).json({ message: "Admin Access Denied" });
   }
   next();
 };
