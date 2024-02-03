@@ -57,11 +57,11 @@ exports.updateAttendance = async (req, res) => {
 };
 
 exports.userAttendance = async (req, res) => {
-  const { fromDate, toDate } = req.body;
+  const { fromDate, toDate, userId } = req.body;
 
   try {
     const result = await Attendance.find({
-      userId: req.user._id,
+      userId,
       createdAt: {
         "$gte": moment(new Date(fromDate)).utc().startOf('day').toDate(),
         "$lte": moment(new Date(toDate)).utc().endOf('day').toDate(),

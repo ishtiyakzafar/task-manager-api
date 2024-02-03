@@ -24,8 +24,8 @@ router.post("/createtask", requireLogin, userMiddleware, createTask);
 router.post("/taskhistory", requireLogin, userMiddleware, taskHistory);
 router.post("/todaysod", requireLogin, userMiddleware, todaySod);
 router.post("/updatetask", requireLogin, userMiddleware, updateTask);
-router.post("/addcomment", requireLogin, userMiddleware, addComment);
-router.post("/deletecomment", requireLogin, userMiddleware, deleteComment);
+router.post("/addcomment", requireLogin, addComment);
+router.post("/deletecomment", requireLogin, deleteComment);
 router.delete("/deletetask/:id", requireLogin, userMiddleware, deleteTask);
 router.post("/filtertask", requireLogin, userMiddleware, filterTask);
 

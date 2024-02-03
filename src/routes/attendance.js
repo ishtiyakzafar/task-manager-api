@@ -12,7 +12,7 @@ const {
 router.post("/attendance", requireLogin, userMiddleware, createAttendance);
 router.get("/attendance", requireLogin, userMiddleware, getAttendance);
 router.put("/attendance", requireLogin, userMiddleware, updateAttendance);
-router.post("/attendance/user", requireLogin, userMiddleware, userAttendance);
+router.post("/attendance/user", requireLogin, userAttendance);
 
 
 module.exports = router;
